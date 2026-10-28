@@ -90,7 +90,7 @@ void calculateStatistics(const double q[], int n);
 
 `X → calculateQ(X) → Q → CONTROL → STATE`
 
-![Преобразование и оперативный контроль](flow_control.png)
+![Преобразование и оперативный контроль](flow_control.drawio.png)
 
 ### Статистический анализ
 
