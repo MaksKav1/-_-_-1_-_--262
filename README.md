@@ -98,7 +98,7 @@ void calculateStatistics(const double q[], int n);
 
 `Q[] → заданный интервал → STATISTICS`
 
-![Статистический анализ](flow_statistics.png)
+![Статистический анализ](flow_statistics.drawio.png)
 
 ---
 
