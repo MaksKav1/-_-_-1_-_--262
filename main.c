@@ -2,6 +2,35 @@
 #include <stdio.h>
 #include <math.h>
 
+double readTemperature(void);
+double calculateQ(double x);
+int control(double q);
+void printState(int state);
+void calculateStatistics(const double q[], int n);
+
+int main(void)
+{
+    double x;
+    double q;
+    int state;
+    x = readTemperature();
+    q = calculateQ(x);
+    printf("Q = %.2f\n", q);
+    state = control(q);
+    printState(state);
+    double qValues[1] = { q };
+    calculateStatistics(qValues, 1);
+    return 0;
+}
+
+double readTemperature(void)
+{
+    double x;
+    printf("Введите температуру реактора X: ");
+    scanf("%lf", &x);
+    return x;
+}
+
 double calculateQ(double x)
 {
     if (x < 72)
@@ -17,13 +46,23 @@ double calculateQ(double x)
         return 3 * sqrt(x - 88 + 1) + 55;
     }
 }
-int main()
+
+int control(double q)
 {
-    double x;
-    double q;
-    printf("Введите температуру реактора X: ");
-    scanf("%lf", &x);
-    q = calculateQ(x);
-    printf("Q = %.2f\n", q);
+    (void)q;
     return 0;
+}
+
+void printState(int state)
+{
+    (void)state;
+
+    printf("STATE: функция будет реализована на следующем этапе\n");
+}
+
+void calculateStatistics(const double q[], int n)
+{
+    (void)q;
+    (void)n;
+    printf("STATISTICS: функция будет реализована на следующем этапе\n");
 }
