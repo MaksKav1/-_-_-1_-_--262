@@ -18,6 +18,8 @@
 #define DIVISOR 3.0
 #define SQRT_OFFSET 1.0
 #define MAX_MEASUREMENTS 50
+#define STAT_START 6
+#define STAT_END 17
 
 double calculateQ(double x);
 int control(double x, double q);
@@ -40,7 +42,7 @@ int main(void)
         printf("Ошибка открытия файла input.txt\n");
         return 1;
     }
-
+   
     while (n < MAX_MEASUREMENTS && fscanf(in, "%lf", &x) == 1)
     {
         printf("Температура X = %.2f\n", x);
@@ -59,6 +61,10 @@ int main(void)
     }
     fclose(in);
     printf("Обработано показаний: %d\n", n);
+    if (n != MAX_MEASUREMENTS)
+    {
+        printf("Внимание: для полного задания требуется 50 показаний.\n");
+    }
     calculateStatistics(qValues, n);
     return 0;
 }
@@ -110,23 +116,55 @@ void printState(int state)
         case 0:
             printf("STATE: НОРМА\n");
             break;
-
         case 1:
             printf("STATE: ПРЕДУПРЕЖДЕНИЕ\n");
             break;
-
         case 2:
             printf("STATE: ТРЕВОГА\n");
             break;
-
         default:
             printf("STATE: НЕИЗВЕСТНО\n");
             break;
     }
 }
+
 void calculateStatistics(const double q[], int n)
 {
-    (void)q;
-    (void)n;
-    printf("STATISTICS: функция будет реализована на следующем этапе\n");
+    double sum = 0.0;
+    double average;
+    double minimum;
+    double maximum;
+    double range;
+    int count = 0;
+    if (n <= STAT_END)
+    {
+        printf("\nНедостаточно данных для статистики.\n");
+        printf("Необходимо минимум %d показаний.\n",
+               STAT_END + 1);
+        return;
+    }
+    minimum = q[STAT_START];
+    maximum = q[STAT_START];
+    for (int i = STAT_START; i <= STAT_END; i++)
+    {
+        sum += q[i];
+        count++;
+        if (q[i] < minimum)
+        {
+            minimum = q[i];
+        }
+        if (q[i] > maximum)
+        {
+            maximum = q[i];
+        }
+    }
+    average = sum / count;
+    range = maximum - minimum;
+    printf("\n===== СТАТИСТИЧЕСКИЙ АНАЛИЗ =====\n");
+    printf("Интервал: Q[%d..%d]\n", STAT_START, STAT_END);
+    printf("Количество значений: %d\n", count);
+    printf("Среднее значение: %.2f\n", average);
+    printf("Минимальное значение: %.2f\n", minimum);
+    printf("Максимальное значение: %.2f\n", maximum);
+    printf("Размах: %.2f\n", range);
 }
