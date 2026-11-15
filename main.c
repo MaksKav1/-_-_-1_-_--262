@@ -3,31 +3,35 @@
 #include <stdio.h>
 #include <math.h>
 
+#define T_MIN 60.0
+#define T_MAX 100.0
 #define T_LOW 72.0
 #define T_HIGH 88.0
 #define T_CENTER 80.0
+#define Q0 45.0
+#define DQ_MAX 7.0
 #define Q_LOW_OFFSET 10.0
 #define Q_MID_OFFSET 45.0
 #define Q_HIGH_OFFSET 55.0
 #define LOW_FACTOR 2.0
-#define MID_FACTOR 3.0
 #define HIGH_FACTOR 3.0
 #define DIVISOR 3.0
 #define SQRT_OFFSET 1.0
+#define MAX_MEASUREMENTS 50
 
 double calculateQ(double x);
-int control(double q);
+int control(double x, double q);
 void printState(int state);
 void calculateStatistics(const double q[], int n);
 
 int main(void)
 {
+    FILE *in;
     double x;
     double q;
-    double qValues[10];
+    double qValues[MAX_MEASUREMENTS];
     int state;
     int n = 0;
-    FILE *in;
     printf("Программа мониторинга реактора.\n");
     printf("Преобразование температуры X в показатель Q.\n\n");
     in = fopen("input.txt", "rt");
@@ -36,26 +40,25 @@ int main(void)
         printf("Ошибка открытия файла input.txt\n");
         return 1;
     }
-    
-    while (n < 10 && fscanf(in, "%lf", &x) == 1)
+
+    while (n < MAX_MEASUREMENTS && fscanf(in, "%lf", &x) == 1)
     {
-        if (x < 60 || x > 100)
+        printf("Температура X = %.2f\n", x);
+        if (x < T_MIN || x > T_MAX)
         {
-            printf("Температура %.2f вне допустимого диапазона\n", x);
+            printf("Ошибка: температура вне диапазона 60-100\n\n");
             continue;
         }
-    
         q = calculateQ(x);
-        printf("\nТемпература X = %.2f\n", x);
         printf("Показатель Q = %.2f\n", q);
-        state = control(q);
+        state = control(x, q);
         printState(state);
         qValues[n] = q;
         n++;
+        printf("\n");
     }
-
     fclose(in);
-    printf("\nОбработано показаний: %d\n", n);
+    printf("Обработано показаний: %d\n", n);
     calculateStatistics(qValues, n);
     return 0;
 }
@@ -78,24 +81,52 @@ double calculateQ(double x)
     }
 }
 
-int control(double q)
+int control(double x, double q)
 {
-    (void)q;
-    // Будет реализована на следующем этапе
-    return 0;
+    static double previousQ = 0.0;
+    static int first = 1;
+    int state;
+    if (!first && fabs(q - previousQ) > DQ_MAX)
+    {
+        state = 2;
+    }
+    else if (x < T_LOW || x > T_HIGH)
+    {
+        state = 1;
+    }
+    else
+    {
+        state = 0;
+    }
+    previousQ = q;
+    first = 0;
+    return state;
 }
 
 void printState(int state)
 {
-    (void)state;
+    switch (state)
+    {
+        case 0:
+            printf("STATE: НОРМА\n");
+            break;
 
-    printf("STATE: функция будет реализована на следующем этапе\n");
+        case 1:
+            printf("STATE: ПРЕДУПРЕЖДЕНИЕ\n");
+            break;
+
+        case 2:
+            printf("STATE: ТРЕВОГА\n");
+            break;
+
+        default:
+            printf("STATE: НЕИЗВЕСТНО\n");
+            break;
+    }
 }
-
 void calculateStatistics(const double q[], int n)
 {
     (void)q;
     (void)n;
-
     printf("STATISTICS: функция будет реализована на следующем этапе\n");
 }
