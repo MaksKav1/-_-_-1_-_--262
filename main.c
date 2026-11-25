@@ -90,7 +90,7 @@ int main(void)
                         printf("Некорректное значение порога\n");
                     }
                 }
-                break;
+                break; 
             case 4:
                 printf("\n===== НАСТРОЙКИ =====\n");
                 printf("Входной файл: %s\n", filename);
